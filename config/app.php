@@ -108,6 +108,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'faker_locale' => 'zh_TW',
+
     /*
     |--------------------------------------------------------------------------
     | Logging Configuration
