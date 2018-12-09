@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Exceptions\InvalidRequestException;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use mysql_xdevapi\Exception;
+
 class ProductsController extends Controller
 {
     public function index(Request $request){
@@ -38,5 +40,12 @@ class ProductsController extends Controller
                                                 'search' => $search,
                                                 'order' => $order
                                             ]]);
+    }
+
+    public function show(Request $request, Product $product) {
+        if(!$product->on_sale) {
+            throw new InvalidRequestException('商品未上架');
+        }
+        return view('products.show',['product' => $product]);
     }
 }
