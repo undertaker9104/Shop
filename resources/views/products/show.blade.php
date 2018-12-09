@@ -35,7 +35,11 @@
                             </div>
                             <div class="cart_amount"><label>數量</label><input type="text" class="form-control input-sm" value="1"><span>件</span><span class="stock"></span></div>
                             <div class="buttons">
+                                @if($favored)
+                                    <button class="btn btn-danger btn-disfavor">取消收藏</button>
+                                @else
                                 <button class="btn btn-success btn-favor">❤ 收藏</button>
+                                @endif
                                 <button class="btn btn-primary btn-add-to-cart">加入購物車</button>
                             </div>
                         </div>
@@ -65,6 +69,35 @@
             $('.sku-btn').click(function () {
                 $('.product-info .price span').text($(this).data('price'));
                 $('.product-info .stock').text('庫存：' + $(this).data('stock') + '件');
+            });
+            $('.btn-favor').click(function(){
+                axios.post('{{route('products.favor', ['product' => $product->id])}}')
+                    .then(function(){
+                        swal('操作成功','','success').then(function(){
+                            location.reload();
+                        });
+                    },function(error){
+                        // 如果返回码是 401 代表没登录
+                        if (error.response && error.response.status === 401) {
+                            swal('請先登入', '', 'error');
+                        } else if (error.response && error.response.data.msg) {
+                            // 其他有 msg 字段的情况，将 msg 提示给用户
+                            swal(error.response.data.msg, '', 'error');
+                        }  else {
+                            // 其他情况应该是系统挂了
+                            swal('系統錯誤', '', 'error');
+                        }
+                    })
+            })
+
+            $('.btn-disfavor').click(function(){
+                axios.delete('{{route('products.disfavor', ['product' => $product->id])}}')
+                    .then(function(){
+                        swal('操作成功','','success')
+                            .then(function(){
+                                location.reload();
+                            });
+                    });
             });
         });
     </script>
