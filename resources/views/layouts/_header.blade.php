@@ -34,6 +34,9 @@
                                 <a href="{{  route('user_addresses.index') }}">收貨地址</a>
                             </li>
                             <li>
+                                <a href="{{  route('orders.index') }}">我的訂單</a>
+                            </li>
+                            <li>
                                 <a href="{{ route('products.favorites') }}">我的收藏</a>
                             </li>
                             <li>
