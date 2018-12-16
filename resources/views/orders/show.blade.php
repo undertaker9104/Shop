@@ -68,16 +68,16 @@
                                 </div>
                                 <!-- 支付按钮开始 -->
                                 @if(!$order->paid_at && !$order->closed)
-                                    <div class="payment-buttons">
-                                        <a class="btn btn-primary btn-sm" href="{{ route('payment.alipay', ['order' => $order->id]) }}">支付寶支付</a>
-                                    </div>
+                                    {{--<div class="payment-buttons">--}}
+                                        {{--<a class="btn btn-primary btn-sm" href="{{ route('payment.alipay', ['order' => $order->id]) }}">支付寶支付</a>--}}
+                                    {{--</div>--}}
                                     <form action="{{ route('payment.paypal',['order'=>$order->id]) }}" method="post">
                                         {{ csrf_field() }}
                                         <button type="submit" class="btn btn-success">
                                            Paypal支付
                                         </button>
                                     </form>
-                                    <div id="paypal-button"></div>
+                                    {{--<div id="paypal-button"></div>--}}
                                 @endif
                                 <!-- 支付按钮结束 -->
                             </div>
