@@ -18,4 +18,5 @@ Route::group([
     $router->get('products/{id}/edit', 'productController@edit');
     $router->put('products/{id}', 'productController@update');
     $router->get('orders','OrdersController@index')->name('admin.orders.index');
+    $router->get('orders/{order}','OrdersController@show')->name('admin.orders.show');
 });
