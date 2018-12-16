@@ -61,7 +61,16 @@
                                                                 否則訂單將自動關閉
                                                             @endif
                                                         </td>
-                                                        <td rowspan="{{ count($order->items) }}" class="text-center"><a class="btn btn-primary btn-xs" href="{{route('orders.show',['order' => $order])}}">查看訂單</a></td>
+                                                        <td rowspan="{{ count($order->items) }}" class="text-center">
+                                                            <a class="btn btn-primary btn-xs" href="{{route('orders.show',['order' => $order])}}">查看訂單</a>
+                                                            <!-- 评价入口开始 -->
+                                                            @if($order->paid_at)
+                                                                <a class="btn btn-success btn-xs" href="{{ route('orders.review.show', ['order' => $order->id]) }}">
+                                                                    {{ $order->reviewed ? '查看評價' : '評價' }}
+                                                                </a>
+                                                            @endif
+                                                        <!-- 评价入口结束 -->
+                                                        </td>
                                                     @endif
                                                 </tr>
                                             @endforeach
