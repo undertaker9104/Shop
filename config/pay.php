@@ -20,4 +20,9 @@ return [
             'file' => storage_path('logs/wechat_pay.log'),
         ],
     ],
+    'credentials' => [
+        'username' => 'Aehr1z_51vtXjdFglQS-hF3NwGhHA8fNbvXe8-Vc6Dtw_kliduUGcKhqE6oFdZABCbtVyXdb1W1Qevla',
+        'password' => 'EK0RS5VUHGVI4HIxa9pRXGPNrSBc23jMTMeHuEX6qoylxiHCkIjPCVLvYI4EnKqXHQv9m3nDmsrGnefC',
+    ],
+
 ];

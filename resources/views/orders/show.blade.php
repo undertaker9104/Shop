@@ -71,6 +71,13 @@
                                     <div class="payment-buttons">
                                         <a class="btn btn-primary btn-sm" href="{{ route('payment.alipay', ['order' => $order->id]) }}">支付寶支付</a>
                                     </div>
+                                    <form action="{{ route('payment.paypal',['order'=>$order->id]) }}" method="post">
+                                        {{ csrf_field() }}
+                                        <button type="submit" class="btn btn-success">
+                                           Paypal支付
+                                        </button>
+                                    </form>
+                                    <div id="paypal-button"></div>
                                 @endif
                                 <!-- 支付按钮结束 -->
                             </div>
@@ -80,4 +87,36 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scriptsAfterJs')
+    <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+    <script>
+        paypal.Button.render({
+            env: 'sandbox', // Or 'production'
+            // Set up the payment:
+            // 1. Add a payment callback
+            payment: function(data, actions) {
+                // 2. Make a request to your server
+                return actions.request.post('/api/create-paypal')
+                .then(function(res) {
+                        // 3. Return res.id from the response
+                    console.log(res);
+                    console.log(res.id);
+                        return res.id;
+                    });
+            },
+            // Execute the payment:
+            // 1. Add an onAuthorize callback
+            onAuthorize: function(data, actions) {
+                // 2. Make a request to your server
+                return actions.request.post('/my-api/execute-payment/', {
+                    paymentID: data.paymentID,
+                    payerID:   data.payerID
+                })
+                    .then(function(res) {
+                        // 3. Show the buyer a confirmation message.
+                    });
+            }
+        }, '#paypal-button');
+    </script>
 @endsection

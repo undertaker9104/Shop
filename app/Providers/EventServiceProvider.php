@@ -6,6 +6,7 @@ use App\Listeners\RegisteredListener;
 use App\Listeners\SendOrderPaidMail;
 use App\Listeners\UpdateProductSoldCount;
 use Illuminate\Auth\Events\Registered;
+use App\Events\OrderPaid;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -23,7 +24,7 @@ class EventServiceProvider extends ServiceProvider
         OrderPaid::class => [
             UpdateProductSoldCount::class,
             SendOrderPaidMail::class,
-        ]
+        ],
     ];
 
     /**
