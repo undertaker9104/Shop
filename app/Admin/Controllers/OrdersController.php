@@ -2,7 +2,9 @@
 
 namespace App\Admin\Controllers;
 
+use App\Http\Requests\Request;
 use App\Models\Order;
+use App\Exceptions\InvalidRequestException;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -167,5 +169,30 @@ class OrdersController extends Controller
         $form->textarea('extra', 'Extra');
 
         return $form;
+    }
+
+    public  function ship(Order $order,Request $request){
+        if(!$order->paid_at){
+            throw new InvalidRequestException('該訂單未付款');
+        }
+        if($order->ship_status !== Order::SHIP_STATUS_PENDING){
+            throw new InvalidRequestException('該訂單已發貨');
+        }
+        $data = $this->validate($request,[
+            'express_company' => ['required'],
+            'express_no'      => ['required'],
+        ],[],[
+            'express_company' => '物流公司',
+            'express_no'      => '物流單號',
+        ]);
+        $order->update([
+            'ship_status' => Order::SHIP_STATUS_DELIVERED,
+            // 我们在 Order 模型的 $casts 属性里指明了 ship_data 是一个数组
+            // 因此这里可以直接把数组传过去
+            'ship_data'   => $data,
+        ]);
+
+        // 返回上一页
+        return redirect()->back();
     }
 }
