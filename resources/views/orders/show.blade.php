@@ -60,7 +60,7 @@
                         <!-- 订单已支付，且退款状态不是未退款时展示退款信息 -->
                             @if($order->paid_at && $order->refund_status !== \App\Models\Order::REFUND_STATUS_PENDING)
                                 <div class="line">
-                                    <div class="line-label">退款状态：</div>
+                                    <div class="line-label">退款狀態：</div>
                                     <div class="line-value">{{ \App\Models\Order::$refundStatusMap[$order->refund_status] }}</div>
                                 </div>
                                 <div class="line">
@@ -88,20 +88,26 @@
                                     @else
                                         未支付
                                     @endif
-                                    <!-- 如果订单的发货状态为已发货则展示确认收货按钮 -->
-                                        @if($order->ship_status === \App\Models\Order::SHIP_STATUS_DELIVERED)
-                                            <div class="receive-button">
-                                                <!-- 将原本的表单替换成下面这个按钮 -->
-                                                <button type="button" id="btn-receive" class="btn btn-sm btn-success">確認收貨</button>
-                                            </div>
-                                        @endif
-                                    <!-- 订单已支付，且退款状态是未退款时展示申请退款按钮 -->
-                                        @if($order->paid_at && $order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
-                                            <div class="refund-button">
-                                                <button class="btn btn-sm btn-danger" id="btn-apply-refund">申請退款</button>
-                                            </div>
-                                        @endif
                                 </div>
+                                @if(isset($order->extra['refund_disagree_reason']))
+                                    <div>
+                                        <span>拒絕退款理由：</span>
+                                        <div class="value">{{ $order->extra['refund_disagree_reason'] }}</div>
+                                    </div>
+                                @endif
+                                <!-- 如果订单的发货状态为已发货则展示确认收货按钮 -->
+                                @if($order->ship_status === \App\Models\Order::SHIP_STATUS_DELIVERED)
+                                    <div class="receive-button">
+                                        <!-- 将原本的表单替换成下面这个按钮 -->
+                                        <button type="button" id="btn-receive" class="btn btn-sm btn-success">確認收貨</button>
+                                    </div>
+                                @endif
+                            <!-- 订单已支付，且退款状态是未退款时展示申请退款按钮 -->
+                                @if($order->paid_at && $order->refund_status === \App\Models\Order::REFUND_STATUS_PENDING)
+                                    <div class="refund-button">
+                                        <button class="btn btn-sm btn-danger" id="btn-apply-refund">申請退款</button>
+                                    </div>
+                                @endif
                                 <!-- 支付按钮开始 -->
                                 @if(!$order->paid_at && !$order->closed)
                                     {{--<div class="payment-buttons">--}}
