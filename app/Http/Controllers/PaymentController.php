@@ -65,10 +65,13 @@ class PaymentController extends Controller
         $order = Order::find($params['order_id']);
         if(isset($paypalResponse['PAYMENTINFO_0_ACK']) && $paypalResponse['PAYMENTINFO_0_ACK'] === 'Success') {
             // here you process the response. Save to database ...
+            $extra = $order->extra;
+            $extra['transaction_id'] = $paypalResponse['PAYMENTINFO_0_TRANSACTIONID'];
             $order->update([
                 'paid_at'        => Carbon::now(), // 支付时间
                 'payment_method' => 'paypal', // 支付方式
                 'payment_no'     => $order->id, // 订单号
+                'extra' => $extra, //交易id
             ]);
             $this->afterPaid($order);
             return view('pages.success',['msg' => '付款成功']);
