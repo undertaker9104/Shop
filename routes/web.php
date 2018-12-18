@@ -52,5 +52,6 @@ Route::group(['middleware' => 'auth'],function(){
 Route::get('products/{product}', 'ProductsController@show')->name('products.show');
 Route::post('payment/alipay/notify', 'PaymentController@alipayNotify')->name('payment.alipay.notify');
 Route::get('payment/paypal/return', 'PaymentController@paypalReturn')->name('payment.paypal.return');
+Route::post('payment/wechat/refund_notify', 'PaymentController@wechatRefundNotify')->name('payment.wechat.refund_notify');
 
 
