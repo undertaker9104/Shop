@@ -54,4 +54,42 @@ class CouponCode extends Model
         }
         return $str.'減'.str_replace('.00','',$this->value);
     }
+
+    public function checkAvailable($orderAmount =  null){
+        if (!$this->enabled) {
+            throw new CouponCodeUnavailableException('優惠券不存在');
+        }
+
+        if ($this->total - $this->used <= 0) {
+            throw new CouponCodeUnavailableException('優惠券已經被兌完');
+        }
+
+        if ($this->not_before && $this->not_before->gt(Carbon::now())) {
+            throw new CouponCodeUnavailableException('該優惠券現在還不能使用');
+        }
+
+        if ($this->not_after && $this->not_after->lt(Carbon::now())) {
+            throw new CouponCodeUnavailableException('該優惠券已經過期');
+        }
+
+        if (!is_null($orderAmount) && $orderAmount < $this->min_amount) {
+            throw new CouponCodeUnavailableException('訂單金額不滿足該優惠券最低金額');
+        }
+    }
+
+    public function getAdjustedPrice($orderAmount){
+        if ($this->type === self::TYPE_FIXED){
+            return max(0.01,$orderAmount - $this->value);
+        }
+        return number_format($orderAmount * (100 - $this.value)/ 100,2,'.','');
+    }
+
+    public function changeUsed($increase = true){
+        if ($increase) {
+            return $this->newQuery()->where('id',$this->id)->where('used','<',$this->total)->increment('used');
+
+        } else {
+            return $this->decrement('used');
+        }
+    }
 }
