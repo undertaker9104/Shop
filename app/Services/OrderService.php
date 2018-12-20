@@ -13,7 +13,7 @@ class OrderService
     public function store(User $user,UserAddress $address,$remark,$items,CouponCode $coupon = null){
 
         if($coupon) {
-            $coupon->checkAvailable();
+            $coupon->checkAvailable($user);
         }
         $order = \DB::transaction(function() use ($user,$address,$remark,$items,$coupon){
             $address->update(['last_used_at' => Carbon::now()]);
@@ -51,14 +51,14 @@ class OrderService
 
             if($coupon){
                 // 总金额已经计算出来了，检查是否符合优惠券规则
-                $coupon->checkAvailable($totalAmount);
+                $coupon->checkAvailable($user,$totalAmount);
                 // 把订单金额修改为优惠后的金额
                 $totalAmount = $coupon->getAdjustedPrice($totalAmount);
                 // 将订单与优惠券关联
                 $order->couponCode()->associate($coupon);
                 // 增加优惠券的用量，需判断返回值
                 if ($coupon->changeUsed() <= 0) {
-                    throw new CouponCodeUnavailableException('该优惠券已被兑完');
+                    throw new CouponCodeUnavailableException('該優惠券已被兌完');
                 }
             }
 

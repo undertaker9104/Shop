@@ -3,18 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\CouponCodeUnavailableException;
+use App\Http\Requests\Request;
 use App\Models\CouponCode;
 use Carbon\Carbon;
 
 class CouponCodesController extends Controller
 {
-    public function show($code)
+    public function show($code, Request $request)
     {
         if (!$record = CouponCode::where('code', $code)->first()){
             throw CouponCodeUnavailableException('該優惠券不存在');
         }
 
-        $record->checkAvailable();
+        $record->checkAvailable($request->user());
         return $record;
     }
 }

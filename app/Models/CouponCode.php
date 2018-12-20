@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-
+use App\Exceptions\CouponCodeUnavailableException;
 class CouponCode extends Model
 {
     // 用常量的方式定义支持的优惠券类型
@@ -55,7 +55,7 @@ class CouponCode extends Model
         return $str.'減'.str_replace('.00','',$this->value);
     }
 
-    public function checkAvailable($orderAmount =  null){
+    public function checkAvailable(User $user, $orderAmount =  null){
         if (!$this->enabled) {
             throw new CouponCodeUnavailableException('優惠券不存在');
         }
@@ -75,13 +75,27 @@ class CouponCode extends Model
         if (!is_null($orderAmount) && $orderAmount < $this->min_amount) {
             throw new CouponCodeUnavailableException('訂單金額不滿足該優惠券最低金額');
         }
+        $used = Order::where('user_id',$user->id)
+                        ->where('coupon_code_id',$this->id)
+                        ->where(function($query){
+                           $query->where(function($query){
+                               $query->whereNull('paid_at')
+                                   ->where('closed',false);
+                           })->orWhere(function($query){
+                              $query->whereNotNull('paid_at')
+                                  ->where('refund_status', '!=', Order::REFUND_STATUS_SUCCESS);
+                           });
+                        })->exists();
+        if ($used) {
+            throw new CouponCodeUnavailableException('你已經使用過這張優惠券了');
+        }
     }
 
     public function getAdjustedPrice($orderAmount){
         if ($this->type === self::TYPE_FIXED){
             return max(0.01,$orderAmount - $this->value);
         }
-        return number_format($orderAmount * (100 - $this.value)/ 100,2,'.','');
+        return number_format($orderAmount * (100 - $this->value)/ 100,2,'.','');
     }
 
     public function changeUsed($increase = true){
