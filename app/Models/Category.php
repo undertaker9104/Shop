@@ -42,12 +42,12 @@ class Category extends Model
         return array_filter(explode('-',trim($this->path, '-')));
     }
 
-    public function getAncestorAttribute() {
+    public function getAncestorsAttribute() {
         return Category::query()->whereIn('id', $this->path_ids)->orderBy('level')->get();
     }
 
     public function getFullNameAttribute() {
-        return $this->ancestor->pluck('name')->push($this->name)->implode('-');
+        return $this->ancestors->pluck('name')->push($this->name)->implode('-');
     }
 
 }
