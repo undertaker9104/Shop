@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -78,9 +79,10 @@ class ProductController extends Controller
     protected function grid()
     {
         $grid = new Grid(new Product);
-
+        $grid->model()->with(['category']);
         $grid->id('ID')->sortable();
         $grid->title('商品名稱');
+        $grid->column('category.name','分類名稱');
         $grid->on_sale('已上架')->display(function($value){
            return $value? '是':'否';
         });
@@ -137,6 +139,12 @@ class ProductController extends Controller
         $form = new Form(new Product);
 
         $form->text('title', '商品名稱')->rules('required');
+        $form->select('category_id','分類')->options(function($id){
+           $category = Category::find($id);
+           if ($category) {
+               return [$category->id = $category->full_name];
+           }
+        })->ajax('/admin/api/categories?is_directory=0');
         $form->editor('description', '商品描述')->rules('required');
         $form->image('image', '封面圖片')->rules('required|image');
         $form->radio('on_sale', '上架')->options(['1' => '是', '0' => '否'])->default(0);
