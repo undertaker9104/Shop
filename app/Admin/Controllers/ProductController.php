@@ -79,6 +79,7 @@ class ProductController extends Controller
     protected function grid()
     {
         $grid = new Grid(new Product);
+        $grid->model()->where('type',Product::TYPE_NORMAL)->with(['category']);
         $grid->model()->with(['category']);
         $grid->id('ID')->sortable();
         $grid->title('商品名稱');
@@ -137,7 +138,7 @@ class ProductController extends Controller
     protected function form()
     {
         $form = new Form(new Product);
-
+        $form->hidden('type')->value(Product::TYPE_NORMAL);
         $form->text('title', '商品名稱')->rules('required');
         $form->select('category_id','分類')->options(function($id){
            $category = Category::find($id);
