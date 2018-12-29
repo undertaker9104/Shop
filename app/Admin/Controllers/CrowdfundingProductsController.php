@@ -11,37 +11,20 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 
-class CrowdfundingProductsController extends Controller
+class CrowdfundingProductsController extends CommonProductsController
 {
     use HasResourceActions;
 
-    public function index(Content $content)
+
+    public function getProductType()
     {
-        return $content
-            ->header('募資商品列表')
-            ->body($this->grid());
+        // TODO: Implement getProductType() method.
+        return Product::TYPE_CROWDFUNDING;
     }
 
-    public function edit($id, Content $content)
+    protected function customGrid(Grid $grid)
     {
-        return $content
-            ->header('編輯募資商品')
-            ->body($this->form()->edit($id));
-    }
-
-    public function create(Content $content)
-    {
-        return $content
-            ->header('創建募資商品')
-            ->body($this->form());
-    }
-
-    protected function grid()
-    {
-        $grid = new Grid(new Product);
-
-        // 只展示 type 为众筹类型的商品
-        $grid->model()->where('type', Product::TYPE_CROWDFUNDING);
+        // TODO: Implement customGrid() method.
         $grid->id('ID')->sortable();
         $grid->title('商品名稱');
         $grid->on_sale('已上架')->display(function ($value) {
@@ -55,49 +38,13 @@ class CrowdfundingProductsController extends Controller
         $grid->column('crowdfunding.status', ' 狀態')->display(function ($value) {
             return CrowdfundingProduct::$statusMap[$value];
         });
-
-        $grid->actions(function ($actions) {
-            $actions->disableView();
-            $actions->disableDelete();
-        });
-        $grid->tools(function ($tools) {
-            $tools->batch(function ($batch) {
-                $batch->disableDelete();
-            });
-        });
-
-        return $grid;
     }
 
-    protected function form()
+    protected function customForm(Form $form)
     {
-        $form = new Form(new Product);
-
-        // 在表单中添加一个名为 type，值为 Product::TYPE_CROWDFUNDING 的隐藏字段
-        $form->hidden('type')->value(Product::TYPE_CROWDFUNDING);
-        $form->text('title', '商品名稱')->rules('required');
-        $form->select('category_id', '分類')->options(function ($id) {
-            $category = Category::find($id);
-            if ($category) {
-                return [$category->id => $category->full_name];
-            }
-        })->ajax('/admin/api/categories?is_directory=0');
-        $form->image('image', '封面圖片')->rules('required|image');
-        $form->editor('description', '商品描述')->rules('required');
-        $form->radio('on_sale', '上架')->options(['1' => '是', '0' => '否'])->default('0');
+        // TODO: Implement customForm() method.
         // 添加众筹相关字段
         $form->text('crowdfunding.target_amount', '募資目标金额')->rules('required|numeric|min:0.01');
         $form->datetime('crowdfunding.end_at', '募資结束时间')->rules('required|date');
-        $form->hasMany('skus', '商品 SKU', function (Form\NestedForm $form) {
-            $form->text('title', 'SKU 名稱')->rules('required');
-            $form->text('description', 'SKU 描述')->rules('required');
-            $form->text('price', '單價')->rules('required|numeric|min:0.01');
-            $form->text('stock', '剩餘庫存')->rules('required|integer|min:0');
-        });
-        $form->saving(function (Form $form) {
-            $form->model()->price = collect($form->input('skus'))->where(Form::REMOVE_FLAG_NAME, 0)->min('price');
-        });
-
-        return $form;
     }
 }

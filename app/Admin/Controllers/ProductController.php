@@ -11,22 +11,9 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
-class ProductController extends Controller
+class ProductController extends CommonProductsController
 {
     use HasResourceActions;
-    /**
-     * Index interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function index(Content $content)
-    {
-        return $content
-            ->header('商品列表')
-            ->description('description')
-            ->body($this->grid());
-    }
 
     /**
      * Show interface.
@@ -43,67 +30,6 @@ class ProductController extends Controller
             ->body($this->detail($id));
     }
 
-    /**
-     * Edit interface.
-     *
-     * @param mixed   $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('編輯商品')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('創建商品')
-            ->description('description')
-            ->body($this->form());
-    }
-
-    /**
-     * Make a grid builder.
-     *
-     * @return Grid
-     */
-    protected function grid()
-    {
-        $grid = new Grid(new Product);
-        $grid->model()->where('type',Product::TYPE_NORMAL)->with(['category']);
-        $grid->model()->with(['category']);
-        $grid->id('ID')->sortable();
-        $grid->title('商品名稱');
-        $grid->column('category.name','分類名稱');
-        $grid->on_sale('已上架')->display(function($value){
-           return $value? '是':'否';
-        });
-        $grid->rating('評分');
-        $grid->sold_count('銷量');
-        $grid->review_count('評論數');
-        $grid->price('價格');
-        $grid->actions(function ($actions) {
-            $actions->disableView();
-            $actions->disableDelete();
-        });
-        $grid->tools(function ($tools) {
-            // 禁用批量删除按钮
-            $tools->batch(function ($batch) {
-                $batch->disableDelete();
-            });
-        });
-
-        return $grid;
-    }
 
     /**
      * Make a show builder.
@@ -130,36 +56,30 @@ class ProductController extends Controller
         return $show;
     }
 
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    protected function form()
+    public function getProductType()
     {
-        $form = new Form(new Product);
-        $form->hidden('type')->value(Product::TYPE_NORMAL);
-        $form->text('title', '商品名稱')->rules('required');
-        $form->select('category_id','分類')->options(function($id){
-           $category = Category::find($id);
-           if ($category) {
-               return [$category->id = $category->full_name];
-           }
-        })->ajax('/admin/api/categories?is_directory=0');
-        $form->editor('description', '商品描述')->rules('required');
-        $form->image('image', '封面圖片')->rules('required|image');
-        $form->radio('on_sale', '上架')->options(['1' => '是', '0' => '否'])->default(0);
-        $form->hasMany('skus', 'Sku列表',function(Form\NestedForm $form){
-            $form->text('title', 'SKU 名稱')->rules('required');
-            $form->text('description', 'SKU 描述')->rules('required');
-            $form->text('price', '單價')->rules('required|numeric|min:0.01');
-            $form->text('stock', '剩餘庫存')->rules('required|integer|min:0');
-        });
+        // TODO: Implement getProductType() method.
+        return Product::TYPE_NORMAL;
+    }
 
-        $form->saving(function(Form $form){
-           $form->model()->price = collect($form->input('skus'))->where(Form::REMOVE_FLAG_NAME,0)->min('price')?:0;
+    protected function customGrid(Grid $grid)
+    {
+        // TODO: Implement customGrid() method.
+        $grid->model()->with(['category']);
+        $grid->id('ID')->sortable();
+        $grid->title('商品名稱');
+        $grid->column('category.name','分類名稱');
+        $grid->on_sale('已上架')->display(function($value){
+            return $value? '是':'否';
         });
+        $grid->rating('評分');
+        $grid->sold_count('銷量');
+        $grid->review_count('評論數');
+        $grid->price('價格');
+    }
 
-        return $form;
+    protected function customForm(Form $form)
+    {
+        // TODO: Implement customForm() method.
     }
 }
