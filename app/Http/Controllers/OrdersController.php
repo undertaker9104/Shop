@@ -19,6 +19,7 @@ use App\Services\OrderService;
 use App\Http\Requests\SendReviewRequest;
 use App\Events\OrderReviewed;
 use App\Http\Requests\CrowdFundingOrderRequest;
+use Omnipay\Common\Exception\InvalidRequestException;
 
 class OrdersController extends Controller
 {
@@ -109,6 +110,10 @@ class OrdersController extends Controller
         // 判断订单退款状态是否正确
         if ($order->refund_status !== Order::REFUND_STATUS_PENDING) {
             throw new InvalidRequestException('該訂單已經申請過退款');
+        }
+        // 判斷不是募資訂單
+        if ($order->type === Order::TYPE_CROWDFUNDING) {
+            throw new InvalidRequestException('募資訂單不支持退款');
         }
         // 将用户输入的退款理由放到订单的 extra 字段中
         $extra= $order->extra ?: [];

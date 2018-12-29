@@ -27,6 +27,7 @@ class OrderService
                ],
                 'remark' => $remark,
                 'total_amount' => 0,
+                'type' => Order::TYPE_NORMAL,
             ]);
 
             $order->user()->associate($user);
@@ -90,6 +91,7 @@ class OrderService
                 ],
                 'remark'       => '',
                 'total_amount' => $sku->price * $amount,
+                'type' => Order::TYPE_CROWDFUNDING,
             ]);
             // 订单关联到当前用户
             $order->user()->associate($user);

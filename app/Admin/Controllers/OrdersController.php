@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Events\OrderReviewed;
 use App\Http\Requests\Admin\HandleRefundRequest;
 use App\Http\Requests\Request;
 use App\Models\Order;
@@ -180,6 +181,10 @@ class OrdersController extends Controller
         }
         if($order->ship_status !== Order::SHIP_STATUS_PENDING){
             throw new InvalidRequestException('該訂單已發貨');
+        }
+        if($order->type === Order::TYPE_CROWDFUNDING &&
+            $order->items[0]->product->crowdfunding->status !== CrowdfundingProduct::STATUS_SUCCESS) {
+            throw new InvalidRequestException('募資訂單只能在募資成功後才能發貨');
         }
         $data = $this->validate($request,[
             'express_company' => ['required'],
