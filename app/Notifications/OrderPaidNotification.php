@@ -28,9 +28,9 @@ class OrderPaidNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('订单支付成功')  // 邮件标题
+            ->subject('訂單支付成功')  // 邮件标题
             ->greeting($this->order->user->name.'您好：') // 欢迎词
-            ->line('您于 '.$this->order->created_at->format('m-d H:i').' 创建的订单已经支付成功。') // 邮件内容
+            ->line('您于 '.$this->order->created_at->format('m-d H:i').'創建的訂單已經支付成功。') // 邮件内容
             ->action('查看订单', route('orders.show', [$this->order->id])) // 邮件中的按钮及对应链接
             ->success(); // 按钮的色调
     }

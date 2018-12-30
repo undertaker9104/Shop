@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Listeners\RegisteredListener;
 use App\Listeners\SendOrderPaidMail;
 use App\Listeners\UpdateProductSoldCount;
+use App\Listeners\UpdateCrowdfundingProductProgress;
 use Illuminate\Auth\Events\Registered;
 use App\Events\OrderPaid;
 use Illuminate\Support\Facades\Event;
