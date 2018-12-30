@@ -13,6 +13,7 @@
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
         "league/omnipay": "^3.0",
+        "moontoast/math": "^1.1",
         "omnipay/paypal": "^3.0",
         "overtrue/laravel-lang": "^3.0",
         "paypal/rest-api-sdk-php": "^1.13",

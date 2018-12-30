@@ -8,6 +8,7 @@ use App\Models\ProductSku;
 use App\Exceptions\InvalidRequestException;
 use App\Jobs\CloseOrder;
 use Carbon\Carbon;
+use Omnipay\Omnipay;
 class OrderService
 {
     public function store(User $user,UserAddress $address,$remark,$items,CouponCode $coupon = null){
@@ -171,7 +172,7 @@ class OrderService
                 break;
             default:
                 // 原则上不可能出现，这个只是为了代码健壮性
-                throw new InternalException('未知订单支付方式：' . $order->payment_method);
+                throw new InternalException('未知訂單支付方式：' . $order->payment_method);
                 break;
             case 'paypal':
 
@@ -181,12 +182,11 @@ class OrderService
                     'transactionReference' => $transaction_id,
                 );
                 $gateway = Omnipay::create('PayPal_Express');
-                $gateway->setUsername('a9581987-faculty_api1.gmail.com'); // here you should place the email of the business sandbox account
+                $gateway->setUsername('a9581987-faculty_api1@gmail.com'); // here you should place the email of the business sandbox account
                 $gateway->setPassword('7N3MHMBC6V7KAR9H'); // here will be the password for the account
                 $gateway->setSignature('AdCth9i9nL2TOOvMhWwrfSSFHhw9AWUM2ydvYBmoxOOituG3joC-jVmv'); // and the signature for the account
                 $gateway->setTestMode(true); // set it to true when you develop and when you go to production to false
                 $response = $gateway->refund($params)->send(); // here you send details to PayPal\
-
                 if ($response->isSuccessful()) {
                     // redirect to offsite payment gateway
                     // 将订单的退款状态标记为退款成功并保存退款订单号

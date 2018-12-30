@@ -39,6 +39,11 @@ class RefundCrowdfundingOrders implements ShouldQueue
             })
             ->get()
             ->each(function (Order $order) use ($orderService) {
+                $extra = $order->extra ?:[];
+                $extra['refund_reason'] = '募資失敗';
+                $order->update([
+                    'extra' => $extra,
+                ]);
                 $orderService->refundOrder($order);
             });
     }
