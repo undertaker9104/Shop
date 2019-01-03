@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Installment;
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class InstallmentsController extends Controller
@@ -11,5 +12,15 @@ class InstallmentsController extends Controller
         $installments = Installment::query()->where('user_id',$request->user()->id)
                                                 ->paginate(10);
         return view('installments.index',['installments' => $installments]);
+    }
+
+    public function show(Installment $installment) {
+        $this->authorize('own',$installment);
+        $items = $installment->items()->orderBy('sequence')->get();
+        return view('installments.show',[
+            'installment' => $installment,
+            'items' => $items,
+            'nextItem' => $items->where('paid_at',null)->first(),
+        ]);
     }
 }
