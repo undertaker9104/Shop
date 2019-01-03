@@ -51,6 +51,9 @@ Route::group(['middleware' => 'auth'],function(){
         Route::post('payment/{order}/installment', 'PaymentController@payByInstallment')->name('payment.installment');
         Route::get('installments', 'InstallmentsController@index')->name('installments.index');
         Route::get('installments/{installment}','InstallmentsController@show')->name('installments.show');
+        Route::get('installments/{installment}/alipay', 'InstallmentsController@payByAlipay')->name('installments.alipay');
+        Route::get('installments/alipay/return', 'InstallmentsController@alipayReturn')->name('installments.alipay.return');
+        Route::get('installments/{installment}/paypal', 'InstallmentsController@payByPaypal')->name('installments.paypal');
    });
 
 });
@@ -58,5 +61,6 @@ Route::get('products/{product}', 'ProductsController@show')->name('products.show
 Route::post('payment/alipay/notify', 'PaymentController@alipayNotify')->name('payment.alipay.notify');
 Route::get('payment/paypal/return', 'PaymentController@paypalReturn')->name('payment.paypal.return');
 Route::post('payment/wechat/refund_notify', 'PaymentController@wechatRefundNotify')->name('payment.wechat.refund_notify');
-
+Route::post('installments/alipay/notify', 'InstallmentsController@alipayNotify')->name('installments.alipay.notify');
+Route::get('installments/paypal/return', 'InstallmentsController@paypalReturn')->name('installments.paypal.return');
 
