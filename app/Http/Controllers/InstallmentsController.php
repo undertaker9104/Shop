@@ -176,11 +176,11 @@ class InstallmentsController extends Controller
         $paypalResponse = $response->getData(); // this is the raw response object
         list($no, $sequence) = explode('_', $params['out_trade_no']);
         if (!$installment = Installment::where('no', $no)->first()) {
-            return 'fail';
+            return view('pages.error',['msg' => '數據不正確']);
         }
         // 根据还款计划编号查询对应的还款计划，原则上不会找不到，这里的判断只是增强代码健壮性
         if (!$item = $installment->items()->where('sequence', $sequence)->first()) {
-            return 'fail';
+            return view('pages.error',['msg' => '數據不正確']);
         }
         if(isset($paypalResponse['PAYMENTINFO_0_ACK']) && $paypalResponse['PAYMENTINFO_0_ACK'] === 'Success') {
 

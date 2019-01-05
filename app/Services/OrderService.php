@@ -187,24 +187,10 @@ class OrderService
                 $gateway->setSignature('AdCth9i9nL2TOOvMhWwrfSSFHhw9AWUM2ydvYBmoxOOituG3joC-jVmv'); // and the signature for the account
                 $gateway->setTestMode(true); // set it to true when you develop and when you go to production to false
                 $response = $gateway->refund($params)->send(); // here you send details to PayPal\
-                if ($response->isSuccessful()) {
-                    // redirect to offsite payment gateway
-                    // 将订单的退款状态标记为退款成功并保存退款订单号
                     $order->update([
                         'refund_no' => $transaction_id,
                         'refund_status' => Order::REFUND_STATUS_SUCCESS,
                     ]);
-                } else {
-                    // 将退款失败的保存存入 extra 字段
-                    $extra = $order->extra;
-                    $extra['refund_failed_code'] = 'just_fail';
-                    // 将订单的退款状态标记为退款失败
-                    $order->update([
-                        'refund_no' => $transaction_id,
-                        'refund_status' => Order::REFUND_STATUS_FAILED,
-                        'extra' => $extra,
-                    ]);
-                }
                 break;
         }
     }
