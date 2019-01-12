@@ -16,7 +16,7 @@ $factory->define(App\Models\UserAddress::class, function (Faker $faker) {
         'city'          => $address[1],
         'district'      => $address[2],
         'address'       => sprintf('第%d街道第%d号', $faker->randomNumber(2), $faker->randomNumber(3)),
-        'zip'           => $faker->postcode,
+        'zip'           => random_int(300000,900000),
         'contact_name'  => $faker->name,
         'contact_phone' => $faker->phoneNumber,
     ];
