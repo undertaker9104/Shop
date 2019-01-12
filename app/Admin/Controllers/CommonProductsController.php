@@ -68,6 +68,7 @@ abstract class CommonProductsController extends Controller
         // 在表单页面中添加一个名为 type 的隐藏字段，值为当前商品类型
         $form->hidden('type')->value($this->getProductType());
         $form->text('title', '商品名稱')->rules('required');
+        $form->text('long_title','商品長名稱')->rules('required');
         $form->select('category_id', '分類')->options(function ($id) {
             $category = Category::find($id);
             if ($category) {
