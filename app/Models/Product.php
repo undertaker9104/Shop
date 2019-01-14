@@ -60,4 +60,35 @@ class Product extends Model
                 return $properties->pluck('value')->all();
             });
     }
+
+    public function toESArray()
+    {
+        $arr = array_only($this->toArray(),[
+            'id',
+            'type',
+            'title',
+            'category_id',
+            'long_title',
+            'on_sale',
+            'rating',
+            'sold_count',
+            'review_count',
+            'price',
+        ]);
+        // 如果商品有分類, 分類為分類名子數組 否則為空
+        $arr['category'] = $this->category ? explode(' - ',$this->category->full_name): '';
+        // 分類的路徑
+        $arr['category_path'] = $this->category ? $this->category->path : '';
+        // strip_tags可以將html部分去除
+        $arr['description'] = strip_tags($this->description);
+        // 取出商品sku需要的部分
+        $arr['skus'] = $this->skus->map(function(ProductSku $sku){
+            return array_only($sku->toArray(),['title','description','price']);
+        });
+        // 取出商品需要的屬性
+        $arr['properties'] = $this->properties->map(function(ProductProperty $property){
+            return array_only($property->toArray(), ['name', 'value']);
+        });
+        return $arr;
+    }
 }
